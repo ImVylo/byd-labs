@@ -12,7 +12,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
-    background: #0b0b0d;
+    background: #070907;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -24,35 +24,57 @@
     content: "";
     position: fixed;
     inset: 0;
-    background: radial-gradient(32rem 32rem at 50% 42%, rgba(255, 122, 26, 0.12), transparent 62%);
+    background:
+      radial-gradient(30rem 30rem at 50% 40%, rgba(77, 255, 122, 0.14), transparent 62%),
+      radial-gradient(46rem 46rem at 50% 110%, rgba(46, 230, 107, 0.07), transparent 60%);
     pointer-events: none;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    z-index: 1;
   }
   .lockup {
     position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.9rem;
+    gap: 2rem;
   }
   .mark {
     width: clamp(9rem, 30vw, 17rem);
     height: clamp(9rem, 30vw, 17rem);
+    filter: drop-shadow(0 0 14px rgba(77, 255, 122, 0.38));
+    animation: throb 3.4s ease-in-out infinite;
+  }
+  @keyframes throb {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(77,255,122,0.28)); }
+    50%      { filter: drop-shadow(0 0 22px rgba(77,255,122,0.55)); }
   }
   .wordmark {
     font-weight: 700;
     font-size: clamp(1.5rem, 5.4vw, 2.6rem);
     letter-spacing: 0.34em;
-    color: #ece9e1;
+    color: #d6ffe2;
     text-indent: 0.34em;
+    text-shadow:
+      0 0 6px rgba(77, 255, 122, 0.7),
+      0 0 18px rgba(77, 255, 122, 0.45),
+      0 0 42px rgba(77, 255, 122, 0.25);
   }
-  .wordmark .slash { color: #ff7a1a; }
+  .wordmark .slash { color: #4dff7a; }
   .status {
     display: none;
     font-size: 0.78rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #6b675e;
-    margin-top: -0.6rem;
+    color: #4f7a5c;
+    margin-top: -0.7rem;
+    text-shadow: 0 0 8px rgba(77,255,122,0.4);
   }
   .status.show { display: block; }
 
@@ -69,8 +91,24 @@
 <body>
   <div class="lockup">
     <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
-      <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
-      <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
+      <defs>
+        <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="2.4" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <!-- hex frame -->
+      <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#0c1a10" stroke="#2ee66b" stroke-width="1.5"/>
+      <!-- radiation trefoil -->
+      <g fill="#4dff7a" filter="url(#glow)">
+        <circle cx="32" cy="32" r="3.5"/>
+        <path d="M28.5 25.94 L21 12.95 A22 22 0 0 1 43 12.95 L35.5 25.94 A7 7 0 0 0 28.5 25.94 Z"/>
+        <path d="M28.5 25.94 L21 12.95 A22 22 0 0 1 43 12.95 L35.5 25.94 A7 7 0 0 0 28.5 25.94 Z" transform="rotate(120 32 32)"/>
+        <path d="M28.5 25.94 L21 12.95 A22 22 0 0 1 43 12.95 L35.5 25.94 A7 7 0 0 0 28.5 25.94 Z" transform="rotate(240 32 32)"/>
+      </g>
     </svg>
     <div class="wordmark">BYD<span class="slash">/</span>LABS</div>
     <div class="status" id="status">no service found</div>
