@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BYD Labs</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -15,26 +18,59 @@
     justify-content: center;
     min-height: 100vh;
     overflow: hidden;
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   }
-  /* one soft amber glow behind the mark */
+  /* one soft amber glow behind the lockup */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: radial-gradient(32rem 32rem at 50% 50%, rgba(255, 122, 26, 0.12), transparent 62%);
+    background: radial-gradient(32rem 32rem at 50% 42%, rgba(255, 122, 26, 0.12), transparent 62%);
     pointer-events: none;
   }
-  .logo {
+  .lockup {
     position: relative;
-    width: clamp(10rem, 36vw, 22rem);
-    height: clamp(10rem, 36vw, 22rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.9rem;
   }
+  .mark {
+    width: clamp(9rem, 30vw, 17rem);
+    height: clamp(9rem, 30vw, 17rem);
+  }
+  .wordmark {
+    font-weight: 700;
+    font-size: clamp(1.5rem, 5.4vw, 2.6rem);
+    letter-spacing: 0.34em;
+    color: #ece9e1;
+    text-indent: 0.34em; /* optically recenter the trailing letter-space */
+  }
+  .wordmark .slash { color: #ff7a1a; }
+  .status {
+    display: none;
+    font-size: 0.78rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #6b675e;
+    margin-top: -0.6rem;
+  }
+  .status.show { display: block; }
 </style>
 </head>
 <body>
-  <svg class="logo" viewBox="0 0 64 64" aria-label="BYD Labs">
-    <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
-    <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
-  </svg>
+  <div class="lockup">
+    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
+      <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
+    </svg>
+    <div class="wordmark">BYD<span class="slash">/</span>LABS</div>
+    <div class="status" id="status">no service found</div>
+  </div>
+  <script>
+    if (new URLSearchParams(location.search).has("err")) {
+      document.getElementById("status").className = "status show";
+    }
+  </script>
 </body>
 </html>
