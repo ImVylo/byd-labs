@@ -4,305 +4,37 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BYD Labs</title>
-<meta name="description" content="Self-hosted tools, run on my own hardware.">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0b0b0d;
-    --bg-2: #101013;
-    --surface: #151518;
-    --ink: #ece9e1;
-    --muted: #9b968a;
-    --faint: #6b675e;
-    --accent: #ff7a1a;
-    --accent-soft: #ffb26b;
-    --line: #232326;
-    --line-strong: #323238;
-    --display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html { scroll-behavior: smooth; }
-
+  html, body { height: 100%; }
   body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--display);
-    font-size: 16px;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    min-height: 100vh;
+    background: #0b0b0d;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
   }
-
-  /* faint amber glow, top-left — one soft source of depth, not a gradient */
+  /* one soft amber glow behind the mark */
   body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background:
-      radial-gradient(52rem 30rem at 8% -8%, rgba(255, 122, 26, 0.08), transparent 60%),
-      radial-gradient(40rem 26rem at 100% 110%, rgba(255, 122, 26, 0.05), transparent 60%);
+    background: radial-gradient(32rem 32rem at 50% 50%, rgba(255, 122, 26, 0.12), transparent 62%);
     pointer-events: none;
-    z-index: 0;
-  }
-
-  /* fine grid texture */
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.25) 70%, transparent);
-  }
-
-  .wrap {
-    position: relative;
-    z-index: 1;
-    width: min(64rem, 100% - 3rem);
-    margin: 0 auto;
-  }
-
-  /* ---- top bar ---- */
-  header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.75rem 0;
-    border-bottom: 1px solid var(--line);
   }
   .logo {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    font-family: var(--mono);
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.18em;
-    color: var(--ink);
-    text-decoration: none;
-  }
-  .logo .mark { width: 26px; height: 26px; flex: none; }
-  .logo .dot { color: var(--accent); }
-  .tag {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .tag .pulse {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 0 rgba(255,122,26,0.5);
-    animation: pulse 2.4s ease-out infinite;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,122,26,0.45); }
-    70% { box-shadow: 0 0 0 7px rgba(255,122,26,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,122,26,0); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .tag .pulse { animation: none; }
-  }
-
-  /* ---- hero ---- */
-  .hero {
-    padding: 6rem 0 4rem;
-    max-width: 46rem;
-  }
-  .kicker {
-    font-family: var(--mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-  }
-  .hero h1 {
-    font-size: clamp(2.6rem, 6.5vw, 4.6rem);
-    font-weight: 700;
-    line-height: 1.02;
-    letter-spacing: -0.02em;
-    text-wrap: pretty;
-  }
-  .hero h1 .accent { color: var(--accent); }
-  .hero .sub {
-    margin-top: 1.5rem;
-    font-size: 1.12rem;
-    color: var(--muted);
-    max-width: 38rem;
-    text-wrap: pretty;
-  }
-
-  /* ---- directory ---- */
-  .directory {
-    border-top: 1px solid var(--line);
-  }
-  .project {
-    display: grid;
-    grid-template-columns: 3rem 1fr auto;
-    gap: 1.5rem;
-    align-items: baseline;
-    padding: 1.75rem 0.5rem;
-    border-bottom: 1px solid var(--line);
-    text-decoration: none;
-    color: inherit;
-    transition: background 0.15s ease, padding 0.15s ease;
-  }
-  .project:hover {
-    background: var(--surface);
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-  .project .idx {
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    color: var(--faint);
-    padding-top: 0.4rem;
-  }
-  .project:hover .idx { color: var(--accent); }
-  .project .body .name {
-    font-size: 1.6rem;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
-  }
-  .project .body .desc {
-    margin-top: 0.35rem;
-    color: var(--muted);
-    font-size: 0.98rem;
-    max-width: 40rem;
-  }
-  .project .meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    color: var(--faint);
-    padding-top: 0.55rem;
-    white-space: nowrap;
-  }
-  .project .meta .arrow {
-    color: var(--accent);
-    transition: transform 0.15s ease;
-    font-weight: 700;
-  }
-  .project:hover .meta .arrow { transform: translate(3px, -2px); }
-
-  /* ---- footer ---- */
-  footer {
-    margin-top: auto;
-    padding: 3rem 0 2.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 2rem;
-    align-items: center;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.04em;
-    color: var(--faint);
-  }
-  footer a { color: var(--muted); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
-
-  @media (max-width: 560px) {
-    .project {
-      grid-template-columns: 2.25rem 1fr;
-      gap: 1rem;
-    }
-    .project .meta {
-      grid-column: 2;
-      padding-top: 0.25rem;
-    }
-    .hero { padding: 4rem 0 3rem; }
+    position: relative;
+    width: clamp(10rem, 36vw, 22rem);
+    height: clamp(10rem, 36vw, 22rem);
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <a class="logo" href="/">
-        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
-          <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
-          <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
-        </svg>
-        <span>BYD<span class="dot">/</span>LABS</span>
-      </a>
-      <span class="tag"><span class="pulse"></span>self-hosted</span>
-    </header>
-
-    <section class="hero">
-      <p class="kicker">Homelab &middot; built by hand</p>
-      <h1>Tools that run on <span class="accent">my own hardware.</span></h1>
-      <p class="sub">
-        A small collection of self-hosted projects — a print queue, a restock
-        tracker, a cooling reference, and whatever's next. No cloud rent, no
-        middleman, just a homelab doing real work.
-      </p>
-    </section>
-
-    <nav class="directory" aria-label="Projects">
-      <a class="project" href="https://print.cody.onl">
-        <span class="idx">01</span>
-        <span class="body">
-          <span class="name">BYD Printing</span>
-          <span class="desc">Invite-only 3D print queue — upload a model and follow it through every stage.</span>
-        </span>
-        <span class="meta">print.cody.onl <span class="arrow">&#8599;</span></span>
-      </a>
-
-      <a class="project" href="https://stockwatch.boyd.fyi">
-        <span class="idx">02</span>
-        <span class="body">
-          <span class="name">StockWatch</span>
-          <span class="desc">Restock tracker — watch a product and get pinged the moment it's back.</span>
-        </span>
-        <span class="meta">stockwatch.boyd.fyi <span class="arrow">&#8599;</span></span>
-      </a>
-
-      <a class="project" href="https://nventdev.boyd.fyi">
-        <span class="idx">03</span>
-        <span class="body">
-          <span class="name">nVent Cooling Lookup</span>
-          <span class="desc">HVAC cooling reference tool for looking up enclosure cooling by heat load.</span>
-        </span>
-        <span class="meta">nventdev.boyd.fyi <span class="arrow">&#8599;</span></span>
-      </a>
-
-      <a class="project" href="https://cody.onl">
-        <span class="idx">04</span>
-        <span class="body">
-          <span class="name">Cody Boyd</span>
-          <span class="desc">Résumé &amp; portfolio — homelab-built, self-hosted, security-minded.</span>
-        </span>
-        <span class="meta">cody.onl <span class="arrow">&#8599;</span></span>
-      </a>
-    </nav>
-
-    <footer>
-      <span>&copy; 2026 BYD Labs</span>
-      <span>built &amp; run on my own hardware</span>
-      <a href="https://boyd.fyi">boyd.fyi</a>
-    </footer>
-  </div>
+  <svg class="logo" viewBox="0 0 64 64" aria-label="BYD Labs">
+    <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
+    <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
+  </svg>
 </body>
 </html>
