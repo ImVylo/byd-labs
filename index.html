@@ -68,9 +68,16 @@
     <div class="status" id="status">no service found</div>
   </div>
   <script>
-    if (new URLSearchParams(location.search).has("err")) {
-      document.getElementById("status").className = "status show";
-    }
+    (function () {
+      var el = document.getElementById("status");
+      var refHost = "";
+      try { refHost = new URL(document.referrer).hostname; } catch (e) {}
+      var isFallback = new URLSearchParams(location.search).has("err");
+      var isRef = refHost && refHost !== location.hostname;
+      if (!isFallback && !isRef) return;
+      el.textContent = isRef ? "no service found for " + refHost : "no service found";
+      el.className = "status show";
+    })();
   </script>
 </body>
 </html>
