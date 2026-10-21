@@ -64,34 +64,6 @@
     z-index: 50;
     cursor: default;
   }
-
-  /* ---- dashboard frame (full-screen, same-origin) ---- */
-  .frame {
-    position: fixed; inset: 0;
-    z-index: 90;
-    background: #0b0b0d;
-  }
-  .frame[hidden] { display: none; }
-  .frame iframe {
-    width: 100%; height: 100%;
-    border: 0;
-    display: block;
-  }
-  .frame .close {
-    position: absolute;
-    top: 12px; right: 14px;
-    z-index: 95;
-    background: rgba(20,20,23,0.85);
-    border: 1px solid #2a2a2f;
-    border-radius: 8px;
-    color: #9b968a;
-    font-family: inherit;
-    font-size: 1.25rem;
-    line-height: 1;
-    width: 36px; height: 36px;
-    cursor: pointer;
-  }
-  .frame .close:hover { color: #ff7a1a; border-color: #ff7a1a; }
 </style>
 </head>
 <body>
@@ -106,11 +78,6 @@
 
   <div class="hotspot" id="hotspot" aria-hidden="true"></div>
 
-  <div class="frame" id="frame" hidden>
-    <iframe id="dash" title="dashboard"></iframe>
-    <button class="close" id="close" aria-label="back to logo">&#215;</button>
-  </div>
-
   <script>
     // fallback error line (referrer carries the dead host through the 302)
     (function () {
@@ -124,21 +91,17 @@
       el.className = "status show";
     })();
 
-    // ?exit=1 — escape hatch: clears the cookie and returns to the logo
-    // (reaches this page even when the dashboard cookie is set, via Traefik's !Query(exit,1))
+    // ?exit=1 — clears the dashboard cookie and returns to the logo
+    // (reaches this page even when the cookie is set, via Traefik's !Query(exit,1))
     if (new URLSearchParams(location.search).get("exit") === "1") {
       document.cookie = "byd_dash=1; path=/; max-age=0; SameSite=Lax;";
       location.replace("/");
     }
 
+    // hidden 3-click login: set the cookie, reload into the dashboard
     (function () {
       var hotspot = document.getElementById("hotspot");
-      var frame = document.getElementById("frame");
-      var dash = document.getElementById("dash");
-      var close = document.getElementById("close");
       var clicks = [];
-
-      // hidden 3-click login: set the cookie, then load the dashboard in-frame
       hotspot.addEventListener("click", function () {
         var now = Date.now();
         clicks = clicks.filter(function (t) { return now - t < 2500; });
@@ -146,15 +109,8 @@
         if (clicks.length >= 3) {
           clicks = [];
           document.cookie = "byd_dash=1; path=/; SameSite=Lax;";
-          if (!dash.src) dash.src = "/";
-          frame.hidden = false;
+          location.reload();
         }
-      });
-
-      // back to logo: clear the cookie, hide the frame
-      close.addEventListener("click", function () {
-        document.cookie = "byd_dash=1; path=/; max-age=0; SameSite=Lax;";
-        frame.hidden = true;
       });
     })();
   </script>
