@@ -7,7 +7,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -44,7 +44,7 @@
     font-size: clamp(1.5rem, 5.4vw, 2.6rem);
     letter-spacing: 0.34em;
     color: #ece9e1;
-    text-indent: 0.34em; /* optically recenter the trailing letter-space */
+    text-indent: 0.34em;
   }
   .wordmark .slash { color: #ff7a1a; }
   .status {
@@ -56,6 +56,67 @@
     margin-top: -0.6rem;
   }
   .status.show { display: block; }
+
+  /* ---- hidden hotspot (top-right corner) ---- */
+  .hotspot {
+    position: fixed;
+    top: 0; right: 0;
+    width: 56px; height: 56px;
+    z-index: 50;
+    cursor: default;
+  }
+
+  /* ---- login modal ---- */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.62);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .overlay[hidden] { display: none; }
+  .card {
+    background: #141417;
+    border: 1px solid #2a2a2f;
+    border-radius: 12px;
+    padding: 2rem;
+    width: min(20rem, calc(100vw - 3rem));
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .card .lock {
+    font-size: 1.1rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #9b968a;
+  }
+  .card input {
+    background: #0b0b0d;
+    border: 1px solid #2a2a2f;
+    border-radius: 8px;
+    color: #ece9e1;
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 0.7rem 0.85rem;
+    outline: none;
+  }
+  .card input:focus { border-color: #ff7a1a; }
+  .card .err {
+    display: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: #ff6b6b;
+  }
+  .card .err.show { display: block; }
+  .card.shake { animation: shake 0.3s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
 </style>
 </head>
 <body>
@@ -67,7 +128,30 @@
     <div class="wordmark">BYD<span class="slash">/</span>LABS</div>
     <div class="status" id="status">no service found</div>
   </div>
+
+  <div class="hotspot" id="hotspot" aria-hidden="true"></div>
+
+  <div class="overlay" id="overlay" hidden>
+    <form class="card" id="card">
+      <div class="lock">&#128274; restricted</div>
+      <input id="pw" type="password" placeholder="password" autocomplete="off" spellcheck="false">
+      <div class="err" id="err">wrong password</div>
+    </form>
+  </div>
+
   <script>
+    var PW_HASH = "36d2086d1d57036b469d4726a9ee6804d3554404f7a9126aaa52f52d33cf4e21";
+    var DASHBOARD = "https://home.byd.dev";
+
+    function sha256hex(s) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)).then(function (buf) {
+        return Array.from(new Uint8Array(buf)).map(function (b) {
+          return b.toString(16).padStart(2, "0");
+        }).join("");
+      });
+    }
+
+    // fallback error line (referrer carries the dead host through the 302)
     (function () {
       var el = document.getElementById("status");
       var refHost = "";
@@ -77,6 +161,48 @@
       if (!isFallback && !isRef) return;
       el.textContent = isRef ? "no service found for " + refHost : "no service found";
       el.className = "status show";
+    })();
+
+    // hidden 3-click login
+    (function () {
+      var hotspot = document.getElementById("hotspot");
+      var overlay = document.getElementById("overlay");
+      var card = document.getElementById("card");
+      var pw = document.getElementById("pw");
+      var err = document.getElementById("err");
+      var clicks = [];
+
+      hotspot.addEventListener("click", function () {
+        var now = Date.now();
+        clicks = clicks.filter(function (t) { return now - t < 2500; });
+        clicks.push(now);
+        if (clicks.length >= 3 && overlay.hidden) {
+          clicks = [];
+          overlay.hidden = false;
+          pw.value = "";
+          err.className = "err";
+          card.className = "card";
+          setTimeout(function () { pw.focus(); }, 30);
+        }
+      });
+
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) { overlay.hidden = true; }
+      });
+
+      card.addEventListener("submit", function (e) {
+        e.preventDefault();
+        sha256hex(pw.value).then(function (h) {
+          if (h === PW_HASH) {
+            window.location.href = DASHBOARD;
+          } else {
+            err.className = "err show";
+            card.className = "card shake";
+            setTimeout(function () { card.className = "card"; }, 300);
+            pw.select();
+          }
+        });
+      });
     })();
   </script>
 </body>
