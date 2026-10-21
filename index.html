@@ -228,12 +228,13 @@
 
   <script>
     // fallback error line — only shown when a dead subdomain hits the catch-all (?err) redirect.
-    // (no hostname: it came from the Referer header, which is unreliable and leaked on lab.byd.dev)
+    // The dead host is passed reliably via the ?host= query param (captured in Traefik).
     (function () {
       var el = document.getElementById("status");
-      var isFallback = new URLSearchParams(location.search).has("err");
-      if (!isFallback) return;
-      el.textContent = "no service found";
+      var params = new URLSearchParams(location.search);
+      if (!params.has("err")) return;
+      var host = params.get("host");
+      el.textContent = host ? "no service found for " + host : "no service found";
       el.className = "status show";
     })();
 
