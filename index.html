@@ -227,15 +227,13 @@
   <div class="hotspot" id="hotspot" aria-hidden="true"></div>
 
   <script>
-    // fallback error line (referrer carries the dead host through the 302)
+    // fallback error line — only shown when a dead subdomain hits the catch-all (?err) redirect.
+    // (no hostname: it came from the Referer header, which is unreliable and leaked on lab.byd.dev)
     (function () {
       var el = document.getElementById("status");
-      var refHost = "";
-      try { refHost = new URL(document.referrer).hostname; } catch (e) {}
       var isFallback = new URLSearchParams(location.search).has("err");
-      var isRef = refHost && refHost !== location.hostname;
-      if (!isFallback && !isRef) return;
-      el.textContent = isRef ? "no service found for " + refHost : "no service found";
+      if (!isFallback) return;
+      el.textContent = "no service found";
       el.className = "status show";
     })();
 
