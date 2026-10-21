@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BYD Labs</title>
 <meta name="description" content="Self-hosted tools, run on my own hardware.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -82,7 +83,10 @@
     padding: 1.75rem 0;
     border-bottom: 1px solid var(--line);
   }
-  .wordmark {
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     font-family: var(--mono);
     font-weight: 700;
     font-size: 0.95rem;
@@ -90,7 +94,8 @@
     color: var(--ink);
     text-decoration: none;
   }
-  .wordmark .dot { color: var(--accent); }
+  .logo .mark { width: 26px; height: 26px; flex: none; }
+  .logo .dot { color: var(--accent); }
   .tag {
     font-family: var(--mono);
     font-size: 0.72rem;
@@ -235,7 +240,13 @@
 <body>
   <div class="wrap">
     <header>
-      <a class="wordmark" href="/">BYD<span class="dot">/</span>LABS</a>
+      <a class="logo" href="/">
+        <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M32 2 58 17 58 47 32 62 6 47 6 17 Z" fill="#ff7a1a"/>
+          <path d="M36 8 18 38 29 38 25 56 47 24 35 24 Z" fill="#0b0b0d"/>
+        </svg>
+        <span>BYD<span class="dot">/</span>LABS</span>
+      </a>
       <span class="tag"><span class="pulse"></span>self-hosted</span>
     </header>
 
